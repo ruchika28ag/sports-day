@@ -1,0 +1,44 @@
+.actionBtn {
+  border: none;
+  outline: none;
+  background-color: #282c34;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.secondaryActionBtn {
+  border: 1px solid #282c34;
+  outline: none;
+  background-color: white;
+  color: #282c34;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.disabledActionBtn {
+  background-color: #999;
+  cursor: default;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.actionBtn:hover {
+  background-color: #282c34df;
+}
+
+.secondaryActionBtn:hover {
+  background-color: #fce8e9;
+}
+
+.actionBtn:active {
+  background-color: #282c34;
+}

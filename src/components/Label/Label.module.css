@@ -1,0 +1,27 @@
+.label {
+  padding: 4px 8px;
+  gap: 4px;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.label.positive {
+  color: #1d5f02;
+  background-color: #eaf3e6;
+}
+
+.label.warning {
+  color: #995213;
+  background-color: #fff9e9;
+}
+
+.label.negative {
+  color: #9b1419;
+  background-color: #fce8e9;
+}
+
+.label.primary {
+  color: #004f9a;
+  background-color: #e6f1fc;
+}
