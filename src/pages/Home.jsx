@@ -1,32 +1,76 @@
-import React, { useEffect, useState } from "react"
-
-import dummyEvents from "../mockData/events.json"
+import React, { useEffect, useMemo, useState } from "react"
 
 import styles from "./Home.module.css"
 import AllEvents from "./AllEvents"
 import RegisteredEventsSection from "./RegisteredEventsSection"
+import {
+  fetchAllEvents,
+  fetchUserRegisteredEvents
+} from "../services/sportEventsServices"
+import { LOGGED_IN_USER_ID } from "../constants/constants"
+import Spinner from "../components/Spinner/Spinner"
 
 const Home = () => {
-  const [events, setEvents] = useState([])
+  const [allEvents, setAllEvents] = useState([])
   const [registeredEvents, setRegisteredEvents] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [statusUpdatingEvent, setStatusUpdatingEvent] = useState()
 
   useEffect(() => {
-    setEvents(dummyEvents)
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true)
+        const events = await Promise.all([
+          fetchAllEvents(),
+          fetchUserRegisteredEvents(LOGGED_IN_USER_ID)
+        ])
+        setAllEvents(events[0])
+        setRegisteredEvents(events[1])
+      } catch (error) {
+        console.log("Error", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchEvents()
   }, [])
+
+  const unregisteredEvents = useMemo(
+    () =>
+      allEvents.filter(
+        (sportEvent) =>
+          !registeredEvents.some(
+            (registeredEvent) => registeredEvent.id === sportEvent.id
+          )
+      ),
+    [allEvents, registeredEvents]
+  )
 
   return (
     <div className={styles.home}>
-      <AllEvents
-        events={events}
-        registeredEvents={registeredEvents}
-        setRegisteredEvents={setRegisteredEvents}
-        setEvents={setEvents}
-      />
-      <RegisteredEventsSection
-        registeredEvents={registeredEvents}
-        setEvents={setEvents}
-        setRegisteredEvents={setRegisteredEvents}
-      />
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <AllEvents
+            events={unregisteredEvents}
+            registeredEvents={registeredEvents}
+            setRegisteredEvents={setRegisteredEvents}
+            setEvents={setAllEvents}
+            setIsLoading={setIsLoading}
+            statusUpdatingEvent={statusUpdatingEvent}
+            setStatusUpdatingEvent={setStatusUpdatingEvent}
+          />
+          <RegisteredEventsSection
+            registeredEvents={registeredEvents}
+            setEvents={setAllEvents}
+            setRegisteredEvents={setRegisteredEvents}
+            setIsLoading={setIsLoading}
+            statusUpdatingEvent={statusUpdatingEvent}
+            setStatusUpdatingEvent={setStatusUpdatingEvent}
+          />
+        </>
+      )}
     </div>
   )
 }

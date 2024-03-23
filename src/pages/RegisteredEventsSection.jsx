@@ -1,12 +1,22 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import styles from "./Home.module.css"
 import EventCard from "../components/EventCard/EventCard"
+import {
+  fetchAllEvents,
+  fetchUserRegisteredEvents,
+  updateUserEvents
+} from "../services/sportEventsServices"
+import { EVENT_ACTIONS, LOGGED_IN_USER_ID } from "../constants/constants"
 
 const RegisteredEventsSection = ({
   setRegisteredEvents,
   setEvents,
-  registeredEvents = []
+  registeredEvents = [],
+  setIsLoading,
+  statusUpdatingEvent,
+  setStatusUpdatingEvent
 }) => {
+  const [disabledEvents, setDisabledEvents] = useState()
   const sortedEvents = useMemo(
     () =>
       registeredEvents.sort(
@@ -15,26 +25,80 @@ const RegisteredEventsSection = ({
     [registeredEvents]
   )
 
-  const handleEventDeRegister = (sportEvent) => {
-    setRegisteredEvents((s) => s.filter((sport) => sport.id !== sportEvent.id))
-    setEvents((s) => [...s, sportEvent])
+  useEffect(() => {
+    const filteredSportsEvents = sortedEvents.filter((event) => {
+      const today = new Date()
+      const eventStartDate = new Date(event.start_time)
+      return eventStartDate < today
+    })
+    setDisabledEvents(filteredSportsEvents)
+  }, [registeredEvents, sortedEvents])
+
+  const checkIfEventDisabled = (sportEvent) =>
+    disabledEvents?.some((disabledEvent) => disabledEvent.id === sportEvent.id)
+
+  const handleEventUnregister = (sportEvent) => {
+    if (
+      disabledEvents?.some(
+        (disabledEvent) => disabledEvent.id === sportEvent.id
+      )
+    ) {
+      console.log("show toast")
+      return
+    }
+    const updateEvents = async () => {
+      try {
+        setStatusUpdatingEvent(sportEvent.id)
+        await updateUserEvents(
+          LOGGED_IN_USER_ID,
+          sportEvent.id,
+          EVENT_ACTIONS.UNREGISTER
+        )
+        setIsLoading(true)
+        const events = await Promise.all([
+          fetchAllEvents(),
+          fetchUserRegisteredEvents(LOGGED_IN_USER_ID)
+        ])
+        setEvents(events[0])
+        setRegisteredEvents(events[1])
+      } catch (error) {
+        console.log("Error", error)
+      } finally {
+        setStatusUpdatingEvent(null)
+        setIsLoading(false)
+      }
+    }
+    updateEvents()
   }
 
   return (
     <div className={styles.registeredListSection}>
       <h4>Registered Events</h4>
       <div className={styles.registeredListContainer}>
-        {sortedEvents.map((registeredEvent) => {
-          return (
-            <EventCard
-              sportEvent={registeredEvent}
-              actionBtnText={"De-Register"}
-              onActionBtnClick={handleEventDeRegister}
-              actionBtnVariant={"secondary"}
-              key={registeredEvent.id}
-            />
-          )
-        })}
+        {sortedEvents.length ? (
+          sortedEvents.map((registeredEvent) => {
+            const isDisabled = checkIfEventDisabled(registeredEvent)
+
+            return (
+              <EventCard
+                sportEvent={registeredEvent}
+                actionBtnText={"Unregister"}
+                onActionBtnClick={handleEventUnregister}
+                actionBtnVariant={
+                  registeredEvent.id === statusUpdatingEvent
+                    ? "loading"
+                    : statusUpdatingEvent
+                    ? "disabled"
+                    : "secondary"
+                }
+                key={registeredEvent.id}
+                isDisabled={isDisabled}
+              />
+            )
+          })
+        ) : (
+          <span>You have not registered to any event.</span>
+        )}
       </div>
     </div>
   )
