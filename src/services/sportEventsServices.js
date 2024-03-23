@@ -1,5 +1,6 @@
 import { apiEndpoints, requestMethodType } from "./apiConstants"
 import makeApiCall from "./fetcher"
+import { toast } from "react-toastify"
 
 const fetchAllEvents = async () => {
   try {
@@ -9,8 +10,9 @@ const fetchAllEvents = async () => {
     )
     return allEvents
   } catch (error) {
-    console.error("Error:", error)
-    console.log("show toast")
+    toast.error(
+      error.error ?? "Unable to fetch events. Try again in some time."
+    )
     throw error
   }
 }
@@ -25,8 +27,10 @@ const fetchUserRegisteredEvents = async (userId) => {
     )
     return userRegisteredEvents
   } catch (error) {
-    console.error("Error:", error)
-    console.log("show toast")
+    toast.error(
+      error.error ??
+        "Unable to fetch registered events. Try again in some time."
+    )
     throw error
   }
 }
@@ -35,17 +39,17 @@ const updateUserEvents = async (userId, eventId, action) => {
   const pathParams = { userId, eventId }
   const requestBody = { action }
   try {
-    await makeApiCall(
+    const response = await makeApiCall(
       requestMethodType.POST,
       apiEndpoints.updateUserEvent,
       pathParams,
       {},
       requestBody
     )
+    toast.success(response.message)
     return
   } catch (error) {
-    console.error("Error:", error)
-    console.log("show toast")
+    toast.error(error.error ?? "Unable to update.")
     throw error
   }
 }

@@ -34,12 +34,14 @@ const makeApiCall = async (
       } else {
         console.error("Server error:", error.response.data)
       }
+      throw error.response.data
     } else if (error.request) {
       console.error("No response received:", error.request)
+      throw error.request
     } else {
       console.error("Error setting up the request:", error.message)
+      throw error.message
     }
-    throw error
   }
 }
 

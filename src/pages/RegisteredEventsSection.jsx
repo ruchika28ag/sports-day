@@ -7,6 +7,7 @@ import {
   updateUserEvents
 } from "../services/sportEventsServices"
 import { EVENT_ACTIONS, LOGGED_IN_USER_ID } from "../constants/constants"
+import { toast } from "react-toastify"
 
 const RegisteredEventsSection = ({
   setRegisteredEvents,
@@ -43,7 +44,7 @@ const RegisteredEventsSection = ({
         (disabledEvent) => disabledEvent.id === sportEvent.id
       )
     ) {
-      console.log("show toast")
+      toast.error("Can not unregister past events.")
       return
     }
     const updateEvents = async () => {

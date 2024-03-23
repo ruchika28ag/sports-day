@@ -7,6 +7,7 @@ import {
   updateUserEvents
 } from "../services/sportEventsServices"
 import { EVENT_ACTIONS, LOGGED_IN_USER_ID } from "../constants/constants"
+import { toast } from "react-toastify"
 
 const AllEvents = ({
   events = [],
@@ -56,7 +57,7 @@ const AllEvents = ({
 
   const handleEventRegister = (sportEvent) => {
     if (registeredEvents.length >= 3) {
-      console.log("show toast")
+      toast.error("Cannot register in more than 3 events")
       return
     }
     if (
@@ -64,7 +65,7 @@ const AllEvents = ({
         (disabledEvent) => disabledEvent.id === sportEvent.id
       )
     ) {
-      console.log("show toast")
+      toast.error("Cannot register overlapping or past events")
       return
     }
     const updateEvents = async () => {
