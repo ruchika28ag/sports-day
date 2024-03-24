@@ -75,9 +75,9 @@ const RegisteredEventsSection = ({
   return (
     <div className={styles.registeredListSection}>
       <h4>Registered Events</h4>
-      <div className={styles.registeredListContainer}>
-        {sortedEvents.length ? (
-          sortedEvents.map((registeredEvent) => {
+      {sortedEvents.length ? (
+        <div className={styles.registeredListContainer}>
+          {sortedEvents.map((registeredEvent) => {
             const isDisabled = checkIfEventDisabled(registeredEvent)
 
             return (
@@ -96,11 +96,11 @@ const RegisteredEventsSection = ({
                 isDisabled={isDisabled}
               />
             )
-          })
-        ) : (
-          <span>You have not registered to any event.</span>
-        )}
-      </div>
+          })}
+        </div>
+      ) : (
+        <span>You have not registered to any event.</span>
+      )}
     </div>
   )
 }

@@ -96,26 +96,28 @@ const AllEvents = ({
   return (
     <div className={styles.allEventsSection}>
       {sortedEvents.length ? (
-        sortedEvents.map((sportEvent) => {
-          const isDisabled = checkIfEventDisabled(sportEvent)
+        <div className={styles.allEventsListContainer}>
+          {sortedEvents.map((sportEvent) => {
+            const isDisabled = checkIfEventDisabled(sportEvent)
 
-          return (
-            <EventCard
-              sportEvent={sportEvent}
-              actionBtnText={"Register"}
-              onActionBtnClick={handleEventRegister}
-              isDisabled={isDisabled}
-              key={sportEvent.id}
-              actionBtnVariant={
-                sportEvent.id === statusUpdatingEvent
-                  ? "loading"
-                  : statusUpdatingEvent
-                  ? "disabled"
-                  : "primary"
-              }
-            />
-          )
-        })
+            return (
+              <EventCard
+                sportEvent={sportEvent}
+                actionBtnText={"Register"}
+                onActionBtnClick={handleEventRegister}
+                isDisabled={isDisabled}
+                key={sportEvent.id}
+                actionBtnVariant={
+                  sportEvent.id === statusUpdatingEvent
+                    ? "loading"
+                    : statusUpdatingEvent
+                    ? "disabled"
+                    : "primary"
+                }
+              />
+            )
+          })}
+        </div>
       ) : (
         <span>No events available to register.</span>
       )}
