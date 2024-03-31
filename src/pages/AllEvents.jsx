@@ -1,24 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo } from "react"
 import styles from "./Home.module.css"
 import EventCard from "../components/EventCard/EventCard"
-import {
-  fetchAllEvents,
-  fetchUserRegisteredEvents,
-  updateUserEvents
-} from "../services/sportEventsServices"
-import { EVENT_ACTIONS, LOGGED_IN_USER_ID } from "../constants/constants"
+
+import { EVENT_ACTIONS, MAX_SELECTABLE_EVENTS } from "../constants/constants"
 import { toast } from "react-toastify"
 
 const AllEvents = ({
   events = [],
   registeredEvents = [],
-  setRegisteredEvents,
-  setEvents,
-  setIsLoading,
   statusUpdatingEvent,
-  setStatusUpdatingEvent
+  updateEventStatus
 }) => {
-  const [disabledEvents, setDisabledEvents] = useState()
   const sortedEvents = useMemo(
     () =>
       events.sort(
@@ -27,8 +19,8 @@ const AllEvents = ({
     [events]
   )
 
-  useEffect(() => {
-    const filteredSportsEvents = sortedEvents.filter((event) => {
+  const disabledEvents = useMemo(() => {
+    return sortedEvents.filter((event) => {
       const today = new Date()
       const eventStartDate = new Date(event.start_time)
       const eventStartTime = eventStartDate.getTime()
@@ -49,48 +41,23 @@ const AllEvents = ({
 
       return isInPast || isSameSlotAsRegistered
     })
-    setDisabledEvents(filteredSportsEvents)
   }, [registeredEvents, sortedEvents])
 
   const checkIfEventDisabled = (sportEvent) =>
     disabledEvents?.some((disabledEvent) => disabledEvent.id === sportEvent.id)
 
   const handleEventRegister = (sportEvent) => {
-    if (registeredEvents.length >= 3) {
-      toast.error("Cannot register in more than 3 events")
-      return
+    if (registeredEvents.length >= MAX_SELECTABLE_EVENTS) {
+      return toast.error("Cannot register in more than 3 events")
     }
     if (
       disabledEvents?.some(
         (disabledEvent) => disabledEvent.id === sportEvent.id
       )
     ) {
-      toast.error("Cannot register overlapping or past events")
-      return
+      return toast.error("Cannot register overlapping or past events")
     }
-    const updateEvents = async () => {
-      try {
-        setStatusUpdatingEvent(sportEvent.id)
-        await updateUserEvents(
-          LOGGED_IN_USER_ID,
-          sportEvent.id,
-          EVENT_ACTIONS.REGISTER
-        )
-        setIsLoading(true)
-        const events = await Promise.all([
-          fetchAllEvents(),
-          fetchUserRegisteredEvents(LOGGED_IN_USER_ID)
-        ])
-        setEvents(events[0])
-        setRegisteredEvents(events[1])
-      } catch (error) {
-        console.log("Error", error)
-      } finally {
-        setStatusUpdatingEvent(null)
-        setIsLoading(false)
-      }
-    }
-    updateEvents()
+    updateEventStatus(sportEvent.id, EVENT_ACTIONS.REGISTER)
   }
 
   return (

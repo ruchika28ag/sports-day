@@ -1,23 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo } from "react"
 import styles from "./Home.module.css"
 import EventCard from "../components/EventCard/EventCard"
-import {
-  fetchAllEvents,
-  fetchUserRegisteredEvents,
-  updateUserEvents
-} from "../services/sportEventsServices"
-import { EVENT_ACTIONS, LOGGED_IN_USER_ID } from "../constants/constants"
 import { toast } from "react-toastify"
+import { EVENT_ACTIONS } from "../constants/constants"
 
 const RegisteredEventsSection = ({
-  setRegisteredEvents,
-  setEvents,
   registeredEvents = [],
-  setIsLoading,
   statusUpdatingEvent,
-  setStatusUpdatingEvent
+  updateEventStatus
 }) => {
-  const [disabledEvents, setDisabledEvents] = useState()
   const sortedEvents = useMemo(
     () =>
       registeredEvents.sort(
@@ -26,14 +17,15 @@ const RegisteredEventsSection = ({
     [registeredEvents]
   )
 
-  useEffect(() => {
-    const filteredSportsEvents = sortedEvents.filter((event) => {
-      const today = new Date()
-      const eventStartDate = new Date(event.start_time)
-      return eventStartDate < today
-    })
-    setDisabledEvents(filteredSportsEvents)
-  }, [registeredEvents, sortedEvents])
+  const disabledEvents = useMemo(
+    () =>
+      sortedEvents.filter((event) => {
+        const today = new Date()
+        const eventStartDate = new Date(event.start_time)
+        return eventStartDate < today
+      }),
+    [sortedEvents]
+  )
 
   const checkIfEventDisabled = (sportEvent) =>
     disabledEvents?.some((disabledEvent) => disabledEvent.id === sportEvent.id)
@@ -44,32 +36,10 @@ const RegisteredEventsSection = ({
         (disabledEvent) => disabledEvent.id === sportEvent.id
       )
     ) {
-      toast.error("Can not unregister past events.")
-      return
+      return toast.error("Can not unregister past events.")
     }
-    const updateEvents = async () => {
-      try {
-        setStatusUpdatingEvent(sportEvent.id)
-        await updateUserEvents(
-          LOGGED_IN_USER_ID,
-          sportEvent.id,
-          EVENT_ACTIONS.UNREGISTER
-        )
-        setIsLoading(true)
-        const events = await Promise.all([
-          fetchAllEvents(),
-          fetchUserRegisteredEvents(LOGGED_IN_USER_ID)
-        ])
-        setEvents(events[0])
-        setRegisteredEvents(events[1])
-      } catch (error) {
-        console.log("Error", error)
-      } finally {
-        setStatusUpdatingEvent(null)
-        setIsLoading(false)
-      }
-    }
-    updateEvents()
+
+    updateEventStatus(sportEvent.id, EVENT_ACTIONS.UNREGISTER)
   }
 
   return (

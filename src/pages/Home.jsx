@@ -5,7 +5,8 @@ import AllEvents from "./AllEvents"
 import RegisteredEventsSection from "./RegisteredEventsSection"
 import {
   fetchAllEvents,
-  fetchUserRegisteredEvents
+  fetchUserRegisteredEvents,
+  updateUserEvents
 } from "../services/sportEventsServices"
 import { LOGGED_IN_USER_ID } from "../constants/constants"
 import Spinner from "../components/Spinner/Spinner"
@@ -46,6 +47,23 @@ const Home = () => {
     [allEvents, registeredEvents]
   )
 
+  const handleUserEventAction = async (eventId, action) => {
+    try {
+      setStatusUpdatingEvent(eventId)
+      await updateUserEvents(LOGGED_IN_USER_ID, eventId, action)
+      setIsLoading(true)
+      const registeredEvents = await fetchUserRegisteredEvents(
+        LOGGED_IN_USER_ID
+      )
+      setRegisteredEvents(registeredEvents)
+    } catch (error) {
+      console.error("Error", error)
+    } finally {
+      setStatusUpdatingEvent(null)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className={styles.home}>
       {isLoading ? (
@@ -55,19 +73,13 @@ const Home = () => {
           <AllEvents
             events={unregisteredEvents}
             registeredEvents={registeredEvents}
-            setRegisteredEvents={setRegisteredEvents}
-            setEvents={setAllEvents}
-            setIsLoading={setIsLoading}
             statusUpdatingEvent={statusUpdatingEvent}
-            setStatusUpdatingEvent={setStatusUpdatingEvent}
+            updateEventStatus={handleUserEventAction}
           />
           <RegisteredEventsSection
             registeredEvents={registeredEvents}
-            setEvents={setAllEvents}
-            setRegisteredEvents={setRegisteredEvents}
-            setIsLoading={setIsLoading}
             statusUpdatingEvent={statusUpdatingEvent}
-            setStatusUpdatingEvent={setStatusUpdatingEvent}
+            updateEventStatus={handleUserEventAction}
           />
         </>
       )}
