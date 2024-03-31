@@ -12,9 +12,9 @@ A web application that lets users register or unregister for events at sports da
 
 - To start a development server, run `yarn start`
 
-### WebUI
+### Backend API
 
-Sports Day also has a web frontend. Please refer to https://github.com/ruchika28ag/sports-day for setup instructions.
+Sports Day also has a backend service. Please refer to https://github.com/ruchika28ag/sports-day-api for setup instructions.
 
 ## Contributing
 
