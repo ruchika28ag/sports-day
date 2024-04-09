@@ -13,7 +13,7 @@ const AllEvents = ({
 }) => {
   const sortedEvents = useMemo(
     () =>
-      events.sort(
+      events?.sort(
         (e1, e2) => new Date(e1.start_time) - new Date(e2.start_time)
       ),
     [events]
@@ -48,7 +48,9 @@ const AllEvents = ({
 
   const handleEventRegister = (sportEvent) => {
     if (registeredEvents.length >= MAX_SELECTABLE_EVENTS) {
-      return toast.error("Cannot register in more than 3 events")
+      return toast.error(
+        `Cannot register in more than ${MAX_SELECTABLE_EVENTS} events`
+      )
     }
     if (
       disabledEvents?.some(
@@ -62,6 +64,7 @@ const AllEvents = ({
 
   return (
     <div className={styles.allEventsSection}>
+      <h4>All Events</h4>
       {sortedEvents.length ? (
         <div className={styles.allEventsListContainer}>
           {sortedEvents.map((sportEvent) => {

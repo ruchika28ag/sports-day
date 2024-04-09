@@ -7,25 +7,11 @@
     "end_time": "2024-12-17 14:00:00"
   },
   {
-    "id": 11,
-    "event_name": "Butterfly 100M",
-    "event_category": "Swimming",
-    "start_time": "2024-12-17 14:00:00",
-    "end_time": "2024-12-17 15:00:00"
-  },
-  {
-    "id": 12,
-    "event_name": "Butterfly 100M",
-    "event_category": "Swimming",
-    "start_time": "2024-12-17 14:30:00",
-    "end_time": "2024-12-17 15:30:00"
-  },
-  {
     "id": 2,
     "event_name": "Backstroke 100M",
     "event_category": "Swimming",
-    "start_time": "2024-12-17 13:30:00",
-    "end_time": "2024-12-17 14:30:00"
+    "start_time": "2024-04-02 13:30:00",
+    "end_time": "2024-04-02 14:30:00"
   },
   {
     "id": 3,
@@ -80,7 +66,7 @@
     "id": 10,
     "event_name": "Heavyweight 91kg",
     "event_category": "Boxing",
-    "start_time": "2024-03-22 20:00:00",
+    "start_time": "2024-12-17 20:00:00",
     "end_time": "2024-12-17 22:00:00"
   }
 ]
